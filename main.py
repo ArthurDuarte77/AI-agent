@@ -58,7 +58,7 @@ def process_user_input(user_prompt):
     print("Bot:", response)
     requests.post("https://ecommerceflow.com.br/waha/api/sendText", {
         "chatId": "553791332517@c.us",
-        "text": f"{response}",
+        "text": f"Bot: {response}",
         "session": "default"
     })
 
