@@ -8,8 +8,8 @@ def receive_message():
     try:
         data = request.get_json()
         print(f"Body recebido: {data}")
-        if data.get("payload", {}).get("from", "") == "553791332517@c.us" and "Bot:" not in data.get("payload", {}).get("body", ""):
-            process_user_input(data.get("payload", {}).get("body", ""));
+        if (data.get("payload", {}).get("from", "") == "553791332517@c.us" and "Bot:" not in data.get("payload", {}).get("body", "")) or (data.get("payload", {}).get("to", "") == "120363370084667846@g.us" and "Bot:" not in data.get("payload", {}).get("body", "")):
+            process_user_input(data.get("payload", {}).get("body", ""), data.get("payload", {}).get("from", ""));
         return jsonify({"message": "Mensagem recebida com sucesso!"}), 200
     except Exception as e:
         print(f"Erro ao processar mensagem: {e}")

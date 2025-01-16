@@ -1,7 +1,7 @@
 import os.path
 import base64
 from email.mime.text import MIMEText
-
+from bs4 import BeautifulSoup
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -9,55 +9,15 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 SCOPES = [
+    "https://www.googleapis.com/auth/gmail.readonly",
+    "https://www.googleapis.com/auth/gmail.send",
     "https://www.googleapis.com/auth/calendar",
-    "https://www.googleapis.com/auth/tasks",
-    "https://www.googleapis.com/auth/gmail.readonly"
+    "https://www.googleapis.com/auth/tasks"
 ]
 
 
-def create_message(sender, to, subject, message_text):
-    message = MIMEText(message_text)
-    message['to'] = to
-    message['from'] = sender
-    message['subject'] = subject
-    raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
-    return {
-        'raw': raw_message
-    }
-
-
-def send_message(service, user_id, message):
-    """Send an email message.
-
-  Args:
-    service: Authorized Gmail API service instance.
-    user_id: User's email address. The special value "me"
-    can be used to indicate the authenticated user.
-    message: Message to be sent.
-
-  Returns:
-    Sent Message.
-  """
-    try:
-        message = (service.users().messages().send(userId=user_id, body=message)
-                   .execute())
-        print('Message Id: %s' % message['id'])
-        return message
-    except HttpError as error:
-        print(f'An error occurred: {error}')
-
-
-def read_emails(max_results=10):
-    """Reads emails from the user's Gmail inbox and returns a list of dictionaries.
-
-    Args:
-        max_results: The maximum number of emails to read (default is 10).
-
-    Returns:
-        A list of dictionaries, where each dictionary represents an email
-        and contains the following keys: 'sender', 'subject', 'body'.
-        Returns an empty list if there are no emails or if an error occurs.
-    """
+def authenticate():
+    """Autentica e retorna o serviço Gmail."""
     creds = None
     if os.path.exists("token.json"):
         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
@@ -71,13 +31,88 @@ def read_emails(max_results=10):
             creds = flow.run_local_server(port=0)
         with open("token.json", "w") as token:
             token.write(creds.to_json())
+    return build("gmail", "v1", credentials=creds)
 
+
+def create_message(sender, to, subject, message_text):
+    """Cria uma mensagem de e-mail."""
+    message = MIMEText(message_text)
+    message['to'] = to
+    message['from'] = sender
+    message['subject'] = subject
+    raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+    return {'raw': raw_message}
+
+
+def send_email(service, user_id, sender_email, receiver_email, subject, message_text):
+    message = create_message(sender_email, receiver_email, subject, message_text)
+    """Envia uma mensagem de e-mail."""
     try:
-        service = build("gmail", "v1", credentials=creds)
+        message = (service.users().messages().send(userId=user_id, body=message)
+                   .execute())
+        print(f'Mensagem enviada com ID: {message["id"]}')
+        return message
+    except HttpError as error:
+        print(f'Ocorreu um erro ao enviar: {error}')
+        return None
+
+
+
+def get_email_body(service, msg):
+    service = authenticate()
+    if not service:
+        print("Falha na autenticação.")
+        return
+    try:
+        msg = (
+            service.users()
+            .messages()
+            .get(userId="me", id=msg["id"], format="full")
+            .execute()
+        )
+        payload = msg["payload"]
+        body = ""
+        if 'parts' in payload:
+            for part in payload['parts']:
+                if part['mimeType'] == "text/plain":
+                    body = base64.urlsafe_b64decode(part['body']['data']).decode()
+                    return body  # Retorna imediatamente se encontrar text/plain
+        
+        # Se não encontrou text/plain, tenta pegar HTML e remover as tags
+        if 'parts' in payload:
+             for part in payload['parts']:
+                if part['mimeType'] == "text/html":
+                    html_body = base64.urlsafe_b64decode(part['body']['data']).decode()
+                    soup = BeautifulSoup(html_body, 'html.parser')
+                    body = soup.get_text(separator='\n', strip=True)
+                    return body
+        elif payload.get('mimeType') == "text/html":
+            html_body = base64.urlsafe_b64decode(payload['body']['data']).decode()
+            soup = BeautifulSoup(html_body, 'html.parser')
+            body = soup.get_text(separator='\n', strip=True)
+            return body
+        elif payload.get('mimeType') == "text/plain":
+           body = base64.urlsafe_b64decode(payload['body']['data']).decode()
+           return body
+
+        return body # Retorna string vazia se não encontrar nenhum formato de texto
+
+    except HttpError as error:
+        print(f"Erro ao obter o corpo do e-mail: {error}")
+        return ""
+
+
+def read_emails(max_results=10, unread_only=False, keywords=None):
+    service = authenticate()
+    if not service:
+        print("Falha na autenticação.")
+        return
+    try:
+        query = "is:unread" if unread_only else ""
         results = (
             service.users()
             .messages()
-            .list(userId="me", maxResults=max_results)
+            .list(userId="me", maxResults=max_results, q=query)
             .execute()
         )
         messages = results.get("messages", [])
@@ -95,37 +130,64 @@ def read_emails(max_results=10):
                 headers = payload["headers"]
                 sender = next((header['value'] for header in headers if header['name'] == 'From'), None)
                 subject = next((header['value'] for header in headers if header['name'] == 'Subject'), None)
-                body = ""
-                if 'parts' in payload:
-                    parts = payload["parts"]
-                    for part in parts:
-                        if part['mimeType'] == "text/plain":
-                            body += base64.urlsafe_b64decode(part['body']['data']).decode()
-                        elif part['mimeType'] == "text/html":
-                            body += base64.urlsafe_b64decode(part['body']['data']).decode()
+                body = get_email_body(service, message)
+
+                if not subject:
+                    subject = ""
+                if not body:     
+                    body = ""
+                if keywords:
+                    print(subject)
+                    print(body)
+                    if any(keyword.lower() in subject.lower() or keyword.lower() in body.lower() for keyword in keywords):
+                        email_list.append({"sender": sender, "subject": subject, "body": body})
                 else:
-                  if payload["mimeType"] == "text/plain":
-                    body = base64.urlsafe_b64decode(payload["body"]["data"]).decode()
-
-                email_list.append({"sender": sender, "subject": subject})
-
+                     email_list.append({"sender": sender, "subject": subject, "body": body})
         return email_list
 
     except HttpError as error:
-        print(f"An error occurred: {error}")
+        print(f"Ocorreu um erro ao ler e-mails: {error}")
         return []
 
+
 def main():
-  emails = read_emails(5)
-  print(emails)
-  # if emails:
-  #     for email in emails:
-  #         print(f"From: {email['sender']}")
-  #         print(f"Subject: {email['subject']}")
-  #         print(f"Body: {email['body']}")
-  #         print("-" * 20)
-  # else:
-  #     print("No emails found.")
+    service = authenticate()
+    if not service:
+        print("Falha na autenticação.")
+        return
+
+    # Exemplo de leitura de e-mails não lidos com filtro por palavra-chave
+    # unread_emails = read_emails(max_results=5, unread_only=False, keywords=["fiap"])
+    # if unread_emails:
+    #   print("E-mails não lidos (filtrados):")
+    #   for email in unread_emails:
+    #       print(f"De: {email['sender']}")
+    #       print(f"Assunto: {email['subject']}")
+    #       print(f"Corpo: {email['body']}")
+    #       print("-" * 20)
+    # else:
+    #      print("Nenhum e-mail não lido encontrado com esses termos.")
+    
+    # Exemplo de leitura de e-mails (sem filtro por palavra-chave)
+    # emails = read_emails(service, max_results=1)
+    # print("Todos os e-mails recentes (sem filtros):")
+    # if emails:
+    #     for email in emails:
+    #         print(f"De: {email['sender']}")
+    #         print(f"Assunto: {email['subject']}")
+    #         print(f"Corpo: {email['body']}")
+    #         print("-" * 20)
+    # else:
+    #     print("Nenhum e-mail encontrado.")
+   
+    # Exemplo de envio de e-mail
+    sender_email = "bolivarartur77@gmail.com"  # Substitua pelo seu e-mail
+    receiver_email = "bolivarartur77yt@gmail.com"  # Substitua pelo e-mail do destinatário
+    subject = "Teste de envio de e-mail"
+    message_text = "Este é um teste de envio de e-mail usando a API do Gmail."
+    
+    send_email(service, "me", sender_email, receiver_email, subject, message_text)
+
 
 if __name__ == "__main__":
     main()

@@ -180,5 +180,86 @@ create_task:
     Resposta: Tarefa criada com sucesso: QXJLQUIzblBlcHRNYTg5ag
 
     Se prescisar de alguma ajuda me fale!
+    
+    
+create_event:
+    ex: create_event : summary: "Reunião de Teste", description: "Reunião para testar a API", start_time: 2025-01-16T09:06:17.265568, end_time: 2025-01-16T10:06:17.265568, location: "Sala 1"
+    Cria um evento com o summary = Reunião de Teste, descrição: Reunião para testar a API, data inicio: 2025-01-16T09:06:17.265568, data final: 2025-01-16T10:06:17.265568, local: Sala 1
+
+    Exemplo de sessão:
+
+    Pergunta: Cria uma evento para o dia 16 de janeiro as 6:17 ate as 10:06 no local Sala 1 vou fazer uma Reunião de teste para testar a API.
+    Pensamento: Eu devo criar um evento, LEMBRE SEMPRE DE PEGAR O TITULO A DATA DE INICIO, A DATA FINAL E O LOCAL, A DESCRIÇÃO PODE SER OPCIONAL MAS SE O USUARIO NÃO PASSAR TENTE CRIAR UMA DE ACORDO COM O TITULO:
+    Ação:
+    {
+    "function_name": "create_event",
+    "function_parms": {
+        "summary": "Reunião de Teste",
+        "description": "Reunião para testar a API",
+        "start_time": 2025-01-16T09:06:17.265568,
+        "end_time": 2025-01-16T10:06:17.265568
+        "location": "Sala 1"
+    }
+    }
+    caso o pensamento seja solicitar detalhes ao usuario não tem ação:
+    Ação:
+    {
+    "function_name": "",
+    "function_parms": {
+    }
+    }
+    
+
+    PAUSA
+
+    Você será chamado novamente com isto:
+
+    Resposta_da_Ação: Evento criado com sucesso: https://www.google.com/calendar/event?eid=MTdwazZtcnR2YWE2c2o2dGpiYW5oZDM2cjQgYm9saXZhcmFydHVyNzdAbQ
+
+    Então você produz:
+
+    Resposta: Evento criado com sucesso: https://www.google.com/calendar/event?eid=MTdwazZtcnR2YWE2c2o2dGpiYW5oZDM2cjQgYm9saXZhcmFydHVyNzdAbQ
+
+    Se prescisar de alguma ajuda me fale!
+    
+    
+    
+get_messages:
+    ex: get_messages 
+    Retorna todas as mensagens não lidas
+
+    Exemplo de sessão:
+
+    Pergunta: Quais são as minhas mensagens não lidas?
+    Pensamento: Eu devo pegar todas as mensagens não lidas
+    Ação:
+    {
+    "function_name": "get_messages",
+    "function_parms": {
+    }
+    }
+    
+
+    PAUSA
+
+    Você será chamado novamente com isto: 
+
+    Resposta_da_Ação: [{'id_to_send': '553784087335@c.us', 'isGroup': False, 'from': 'Caio', 'message': 'Olá!'}, {'id_to_send': '553171704667-1420406817@g.us', 'isGroup': True, 'group': 'Família do vovô Fábio', 'from': 'Marcia', 'message': 'Voa né. Pinguim de gente.'}]
+
+    Então você produz:
+    Resposta: Voce tem duas mensagens:
+    ---
+    De: Caio
+    Mensagem: Olá!
+    ---
+    Grupo: Família do vovô Fábio
+    De: Marcia
+    Mensagem: Voa né. Pinguim de gente.
+    ---
+
+    Se prescisar de alguma ajuda me fale!
+
+    
+
 
 """

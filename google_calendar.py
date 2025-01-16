@@ -7,11 +7,11 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-# Escopos atualizados para incluir calendar e tasks
 SCOPES = [
+    "https://www.googleapis.com/auth/gmail.readonly",
+    "https://www.googleapis.com/auth/gmail.send",
     "https://www.googleapis.com/auth/calendar",
-    "https://www.googleapis.com/auth/tasks",
-    "https://www.googleapis.com/auth/gmail.readonly"
+    "https://www.googleapis.com/auth/tasks"
 ]
 
 
@@ -40,8 +40,8 @@ def create_event(summary, description, start_time, end_time, location=""):
         event = {
             "summary": summary,
             "description": description,
-            "start": {"dateTime": start_time},
-            "end": {"dateTime": end_time},
+            "start": {"dateTime": start_time, "timeZone": "America/Sao_Paulo"},
+            "end": {"dateTime": end_time, "timeZone": "America/Sao_Paulo"},
             "location": location,
         }
         event = (
@@ -58,8 +58,8 @@ def create_task(title, notes="", due_date=None):
     try:
         service = build("tasks", "v1", credentials=creds)
         task = {"title": title, "notes": notes}
-        if due_date:
-            task["due"] = due_date
+        # if due_date:
+        #     task["due"] = due_date
         task = service.tasks().insert(tasklist="@default", body=task).execute()
         return f"Tarefa criada com sucesso: {task.get('id')}"
     except HttpError as error:
@@ -122,17 +122,17 @@ def list_tasks(max_tasks=10):
 if __name__ == "__main__":
     # Exemplo de uso:
     # Cria um evento
-    # start_time = (datetime.datetime.now() + datetime.timedelta(hours=1)).isoformat()
-    # end_time = (datetime.datetime.now() + datetime.timedelta(hours=2)).isoformat()
-    # print(
-    #     create_event(
-    #         "Reunião de Teste", "Reunião para testar a API", start_time, end_time, "Sala 1"
-    #     )
-    # )
+    start_time = (datetime.datetime.now() + datetime.timedelta(hours=1)).isoformat()
+    end_time = (datetime.datetime.now() + datetime.timedelta(hours=2)).isoformat()
+    print(
+        create_event(
+            "Reunião de Teste", "Reunião para testar a API", start_time, end_time, "Sala 1"
+        )
+    )
 
     # Cria uma tarefa
-    due_date = (datetime.datetime.now() + datetime.timedelta(days=2)).isoformat()
-    print(create_task("Comprar Leite", "Ir ao mercado comprar leite", due_date))
+    # due_date = (datetime.datetime.now() + datetime.timedelta(days=2)).isoformat()
+    # print(create_task("Comprar Leite", "Ir ao mercado comprar leite", due_date))
 
     # Lista os próximos eventos
     # print("\nPróximos eventos:")

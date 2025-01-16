@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from actions import get_response_time
 from gmail import read_emails
 from prompts import system_prompt
-from google_calendar import list_events, list_tasks, create_task
+from google_calendar import list_events, list_tasks, create_task, create_event
+from whatsapp import getMessagesUnread, send_messages
 from json_helpers import extract_json
 
 # Load environment variables
@@ -47,20 +48,24 @@ available_actions = {
     "read_emails": read_emails,
     "get_events": list_events,
     "list_tasks": list_tasks,
-    "create_task": create_task
+    "create_task": create_task,
+    "create_event": create_event,
+    "get_messages": getMessagesUnread,
+    "send_messages": send_messages
 }
 
 
-def process_user_input(user_prompt):
+def process_user_input(user_prompt, send_id = "553791332517@c.us"):
     """Processes user input, including function calls."""
     
     response = generate_text_with_conversation(history, user_prompt)
     print("Bot:", response)
-    requests.post("https://ecommerceflow.com.br/waha/api/sendText", {
-        "chatId": "553791332517@c.us",
-        "text": f"Bot: {response}",
-        "session": "default"
-    })
+    if "Pensamento:" not in response:
+        requests.post("https://ecommerceflow.com.br/waha/api/sendText", {
+            "chatId": send_id,
+            "text": f"Bot: {response}",
+            "session": "default"
+        })
 
     json_function = extract_json(response)
 
