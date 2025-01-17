@@ -7,16 +7,10 @@ app = Flask(__name__)
 def receive_message():
     try:
         data = request.get_json()
-        print(f"Body recebido: {data}")
-        if (data.get("payload", {}).get("from", "") == "553791332517@c.us" and "Bot:" not in data.get("payload", {}).get("body", "")) or (data.get("payload", {}).get("to", "") == "120363370084667846@g.us" and "Bot:" not in data.get("payload", {}).get("body", "")):
-            if data.get("payload", {}).get("to", "") == "120363370084667846@g.us":
-                process_user_input(data.get("payload", {}).get("body", ""), data.get("payload", {}).get("to", ""));
-            else:
-                process_user_input(data.get("payload", {}).get("body", ""), data.get("payload", {}).get("from", ""));
+        if data.get("payload", {}).get("fromMe", "") == True and "Resposta:" not in data.get("payload", {}).get("body", "") and data.get("payload", {}).get("hasMedia", "") == False and data.get("payload", {}).get("to", "") == "553791332517@c.us":
+            print("Entrou no bot: ")
+            process_user_input(data.get("payload", {}).get("body", ""));
         return jsonify({"message": "Mensagem recebida com sucesso!"}), 200
     except Exception as e:
         print(f"Erro ao processar mensagem: {e}")
-        return jsonify({"error": "Erro ao processar a mensagem."}), 400
-    
-if __name__ == '__main__':
-    app.run(host='127.0.0.1', debug=True, port=5500)
+        return jsonify({"error": f"Erro ao processar mensagem: {e}"}), 400 

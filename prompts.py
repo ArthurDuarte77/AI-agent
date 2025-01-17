@@ -144,7 +144,7 @@ list_tasks:
     Se prescisar de alguma ajuda me fale!
     
 create_task:
-    ex: create_task : title: "Comprar Leite", description: "Ir ao mercado comprar leite", due_date: 2025-01-17 10:54
+    ex: create_task : title = "Comprar Leite", description = "Ir ao mercado comprar leite", due_date = 2025-01-17 10:54
     Cria um tarefa com o titulo = Comprar Leite, descrição: Ir ao mercado comprar leite, data de vencimento: due_date
 
     Exemplo de sessão:
@@ -183,7 +183,7 @@ create_task:
     
     
 create_event:
-    ex: create_event : summary: "Reunião de Teste", description: "Reunião para testar a API", start_time: 2025-01-16T09:06:17.265568, end_time: 2025-01-16T10:06:17.265568, location: "Sala 1"
+    ex: create_event : summary = "Reunião de Teste", description = "Reunião para testar a API", start_time = 2025-01-16T09:06:17.265568, end_time = 2025-01-16T10:06:17.265568, location = "Sala 1"
     Cria um evento com o summary = Reunião de Teste, descrição: Reunião para testar a API, data inicio: 2025-01-16T09:06:17.265568, data final: 2025-01-16T10:06:17.265568, local: Sala 1
 
     Exemplo de sessão:
@@ -260,6 +260,80 @@ get_messages:
     Se prescisar de alguma ajuda me fale!
 
     
+send_messages:
+    ex: send_messages : send_id = "553791332517@c.us", message = "mensagem de teste"
+    envia mensagem para o numero 553791332517 com a mensagem de "mensagem de teste"
 
+    Exemplo de sessão:
+
+    Pergunta: Envia a mensagem para o numero 553791332517 com a mensagem de "mensagem de teste"
+    Pensamento: Eu devo enviar uma mensagem para o numero 553791332517 com a mensagem de "mensagem de teste", LEMBRE SEMPRE DE PEGAR O NUMERO E A MENSAGEM
+    Ação:
+    {
+    "function_name": "send_messages",
+    "function_parms": {
+        "send_id": "553791332517@c.us",
+        "message": "mensagem de teste",
+    }
+    }
+    caso o pensamento seja solicitar detalhes ao usuario não tem ação:
+    Ação:
+    {
+    "function_name": "",
+    "function_parms": {
+    }
+    }
+    
+
+    PAUSA
+
+    Você será chamado novamente com isto:
+
+    Resposta_da_Ação: Mensagem enviada com sucesso
+
+    Então você produz:
+
+    Resposta: Mensagem enviada com sucesso
+
+    Se prescisar de alguma ajuda me fale!
+    
+send_email:
+    ex: send_email : receiver_email = "bolivarartur77yt@gmail.com", subject = "Teste de envio de e-mail", message_text = "Este é um teste de envio de e-mail usando a API do Gmail."
+    Envia um email para o email "bolivarartur77yt@gmail.com", com o subject "Teste de envio de e-mail", com a mensagem "Este é um teste de envio de e-mail usando a API do Gmail."
+
+
+    Exemplo de sessão:
+
+    Pergunta: Envia um email para o bolivarartur77yt@gmail.com com o assunto Teste de envio de e-mail e a mensagem Este é um teste de envio de e-mail usando a API do Gmail.
+    Pensamento: Eu devo enviar um email para o bolivarartur77yt@gmail.com com o assunto Teste de envio de e-mail e a mensagem Este é um teste de envio de e-mail usando a API do Gmail, LEMBRE SEMPRE DE PEGAR O EMAIL DE DESTINO O SUBJECT E A MENSAGEM COM O USUARIO.
+    Ação:
+    {
+    "function_name": "send_email",
+    "function_parms": {
+        "receiver_email": "bolivarartur77yt@gmail.com",
+        "subject": "Teste de envio de e-mail",
+        "message_text": "Este é um teste de envio de e-mail usando a API do Gmail."
+    }
+    }
+    caso o pensamento seja solicitar detalhes ao usuario não tem ação:
+    Ação:
+    {
+    "function_name": "",
+    "function_parms": {
+    }
+    }
+    
+
+    PAUSA
+
+    Você será chamado novamente com isto:
+
+    Resposta_da_Ação: Mensagem enviada com ID: 19473c109792b58c
+
+    Então você produz:
+
+    Resposta: Email enviado com sucesso!
+
+    Se prescisar de alguma ajuda me fale!
 
 """

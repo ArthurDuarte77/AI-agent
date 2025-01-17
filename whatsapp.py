@@ -46,7 +46,7 @@ def send_messages(send_id, message):
         "text": f"{message}",
         "session": "default"
     })
-    if response.status_code == 200:
+    if response.status_code == 201:
         return "Mensagem enviada com sucesso"
     else:
         return "Erro ao enviar mensagem"

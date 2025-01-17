@@ -44,11 +44,15 @@ def create_message(sender, to, subject, message_text):
     return {'raw': raw_message}
 
 
-def send_email(service, user_id, sender_email, receiver_email, subject, message_text):
-    message = create_message(sender_email, receiver_email, subject, message_text)
+def send_email(receiver_email, subject, message_text):
+    service = authenticate()
+    if not service:
+        print("Falha na autenticação.")
+        return
+    message = create_message( "bolivarartur77@gmail.com", receiver_email, subject, message_text)
     """Envia uma mensagem de e-mail."""
     try:
-        message = (service.users().messages().send(userId=user_id, body=message)
+        message = (service.users().messages().send(userId="me", body=message)
                    .execute())
         print(f'Mensagem enviada com ID: {message["id"]}')
         return message
@@ -58,7 +62,7 @@ def send_email(service, user_id, sender_email, receiver_email, subject, message_
 
 
 
-def get_email_body(service, msg):
+def get_email_body(msg):
     service = authenticate()
     if not service:
         print("Falha na autenticação.")
@@ -130,7 +134,7 @@ def read_emails(max_results=10, unread_only=False, keywords=None):
                 headers = payload["headers"]
                 sender = next((header['value'] for header in headers if header['name'] == 'From'), None)
                 subject = next((header['value'] for header in headers if header['name'] == 'Subject'), None)
-                body = get_email_body(service, message)
+                body = get_email_body(message)
 
                 if not subject:
                     subject = ""
@@ -142,7 +146,7 @@ def read_emails(max_results=10, unread_only=False, keywords=None):
                     if any(keyword.lower() in subject.lower() or keyword.lower() in body.lower() for keyword in keywords):
                         email_list.append({"sender": sender, "subject": subject, "body": body})
                 else:
-                     email_list.append({"sender": sender, "subject": subject, "body": body})
+                     email_list.append({"sender": sender, "subject": subject})
         return email_list
 
     except HttpError as error:
@@ -151,10 +155,6 @@ def read_emails(max_results=10, unread_only=False, keywords=None):
 
 
 def main():
-    service = authenticate()
-    if not service:
-        print("Falha na autenticação.")
-        return
 
     # Exemplo de leitura de e-mails não lidos com filtro por palavra-chave
     # unread_emails = read_emails(max_results=5, unread_only=False, keywords=["fiap"])
@@ -181,12 +181,11 @@ def main():
     #     print("Nenhum e-mail encontrado.")
    
     # Exemplo de envio de e-mail
-    sender_email = "bolivarartur77@gmail.com"  # Substitua pelo seu e-mail
     receiver_email = "bolivarartur77yt@gmail.com"  # Substitua pelo e-mail do destinatário
     subject = "Teste de envio de e-mail"
     message_text = "Este é um teste de envio de e-mail usando a API do Gmail."
     
-    send_email(service, "me", sender_email, receiver_email, subject, message_text)
+    send_email( receiver_email, subject, message_text)
 
 
 if __name__ == "__main__":
