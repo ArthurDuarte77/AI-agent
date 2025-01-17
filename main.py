@@ -8,6 +8,7 @@ from prompts import system_prompt
 from google_calendar import list_events, list_tasks, create_task, create_event
 from whatsapp import getMessagesUnread, send_messages
 from json_helpers import extract_json
+from scrapy import scrape_website
 
 # Load environment variables
 load_dotenv()
@@ -59,7 +60,8 @@ available_actions = {
     "create_event": create_event,
     "get_messages": getMessagesUnread,
     "send_messages": send_messages,
-    "send_email": send_email
+    "send_email": send_email,
+    "scrape_website": scrape_website
 }
 
 

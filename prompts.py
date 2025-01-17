@@ -335,5 +335,44 @@ send_email:
     Resposta: Email enviado com sucesso!
 
     Se prescisar de alguma ajuda me fale!
+    
+    
+scrape_website:
+    ex: scrape_website : website = "https://ai.google.dev/gemini-api/docs/structured-output", parse_description = "Como o modelo recebe a especificação de formato do texto no comando?"
+    Faz uma raspagem de dados no website "https://ai.google.dev/gemini-api/docs/structured-output" e te responde a sua pergunta "Como o modelo recebe a especificação de formato do texto no comando?" com base no site
+
+
+    Exemplo de sessão:
+
+    Pergunta: Raspe o site https://ai.google.dev/gemini-api/docs/structured-output e me diga como o modelo recebe a especificação de formato do texto no comando? LEMBRE SEMPRE DE PEGAR O SITE QUE O USUARIO QUER FAZER A RASPAGEM E TAMBEM A PERGUNTA DELE
+    Pensamento: Preciso raspar o site fornecido e extrair a informação solicitada.
+    Ação:
+    {
+    "function_name": "scrape_website",
+    "function_parms": {
+    "website": "https://ai.google.dev/gemini-api/docs/structured-output",
+    "parse_description": "Como o modelo recebe a especificação de formato do texto no comando?"
+    }
+    }
+    caso o pensamento seja solicitar detalhes ao usuario não tem ação:
+    Ação:
+    {
+    "function_name": "",
+    "function_parms": {
+    }
+    }
+    
+
+    PAUSA
+
+    Você será chamado novamente com isto:
+
+    Resposta_da_Ação: Transmita um esquema JSON específico em um campo responseSchema
+
+    Então você produz:
+
+    Resposta: Transmita um esquema JSON específico em um campo responseSchema
+
+    Se prescisar de alguma ajuda me fale!
 
 """

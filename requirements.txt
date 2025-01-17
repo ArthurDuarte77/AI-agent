@@ -1,7 +1,11 @@
+langchain-google-genai
+langchain-core
+selenium
 requests
 google-generativeai
 python-dotenv
 flask
+beautifulsoup4
 google-api-python-client
-google-auth-httplib2
-google-auth-oauthlib
+pydantic
+typing
