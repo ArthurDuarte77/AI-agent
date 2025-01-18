@@ -18,6 +18,7 @@ def scrape_website(website, parse_description):
       print("Navigated! Scraping page content...")
       html = driver.page_source
       dom_chunks = split_dom_content(clean_body_content(extract_body_content(html_content=html)))
+      print(dom_chunks)
       parsed_result = parse_with_gemini(dom_chunks, parse_description)
       return parsed_result
     finally:

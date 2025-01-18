@@ -336,22 +336,24 @@ send_email:
 
     Se prescisar de alguma ajuda me fale!
     
-    
-scrape_website:
-    ex: scrape_website : website = "https://ai.google.dev/gemini-api/docs/structured-output", parse_description = "Como o modelo recebe a especificação de formato do texto no comando?"
-    Faz uma raspagem de dados no website "https://ai.google.dev/gemini-api/docs/structured-output" e te responde a sua pergunta "Como o modelo recebe a especificação de formato do texto no comando?" com base no site
 
+    
+    
+search_somenthing: 
+    ex: search_somenthing : type = "search", query = "jfa eletronicos", num = 1
+    Faz uma pesquisa do tipo "search" com a query "jfa eletronicos" trazendo somente 1 resultados
 
     Exemplo de sessão:
 
-    Pergunta: Raspe o site https://ai.google.dev/gemini-api/docs/structured-output e me diga como o modelo recebe a especificação de formato do texto no comando? LEMBRE SEMPRE DE PEGAR O SITE QUE O USUARIO QUER FAZER A RASPAGEM E TAMBEM A PERGUNTA DELE
-    Pensamento: Preciso raspar o site fornecido e extrair a informação solicitada.
+    Pergunta: Faça uma pesquisa no google sobre jfa eletronicos e me traga 1 resultados.
+    Pensamento: Eu devo fazer uma pesquisa no google sobre jfa eletronicos e trazer 1 resultados, LEMBRE SEMPRE DE PEGAR O TIPO DE PESQUISA: CASO O TIPO DE PESQUISA SEJA SOBRE SHOPPING USE O TIPO COMO: "shopping", SE FOR NORMAL USE: "search", A QUERY, O NUMERO DE RESULTADOS SE NÃO FOR PASSADO USA COMO 1.
     Ação:
     {
-    "function_name": "scrape_website",
+    "function_name": "search_somenthing",
     "function_parms": {
-    "website": "https://ai.google.dev/gemini-api/docs/structured-output",
-    "parse_description": "Como o modelo recebe a especificação de formato do texto no comando?"
+    "type": "search",
+    "query": "jfa eletronicos"
+    "num": 1
     }
     }
     caso o pensamento seja solicitar detalhes ao usuario não tem ação:
@@ -367,11 +369,16 @@ scrape_website:
 
     Você será chamado novamente com isto:
 
-    Resposta_da_Ação: Transmita um esquema JSON específico em um campo responseSchema
+    Resposta_da_Ação: {"searchParameters":{"q":"jfa eletronicos","gl":"br","hl":"pt-br","type":"search","num":3,"engine":"google"},"knowledgeGraph":{"title":"JFA Eletrônicos","type":"Fabricante de eletrônicos em Belo Horizonte, Minas Gerais","website":"http://www.jfaeletronicos.com/","rating":4,"ratingCount":62,"imageUrl":"https://lh5.googleusercontent.com/p/AF1QipORhz6HzbUXw0B4nn2mHIa-NfdiquzoLMMSfvqU=w72-h72-n-k-no","attributes":{"Endereço":"R. Flôr das Pedras, 175 - Jardim Montanhês, Belo Horizonte - MG, 30810-000","Horário":"Fechado ⋅ Abre seg. às 07:00","Telefone":"(31) 2533-6100 ⋅ (31) 98423-1100"}},"organic":[{"title":"JFA Eletrônicos - Automotivo e Energia Solar","link":"https://jfaeletronicos.com/","snippet":"A JFA Eletrônicos, no mercado automotivo há mais de 18 anos, agora traz, também, inovação e tecnologia para o mercado de Telecomunicações.","position":1},{"title":"Jfa Eletronicos | MercadoLivre","link":"https://lista.mercadolivre.com.br/jfa-eletronicos","snippet":"Jfa eletronicos. Ls Distribuidora. Aqui você encontra Fontes Automotivas com os menores preços! Fonte Carregador Jfa Bob Storm 90a Bivolt Automático Cor Preto.","position":2},{"title":"JFA Eletrônicos I Perfil oficial (@jfaeletronicos) - Instagram","link":"https://www.instagram.com/jfaeletronicos/","snippet":"Produzimos os melhores produtos para o seu som automotivo Inovação e tecnologia para proporcionar as melhores experiências! Rua Flor das Pedras, 175, ...","position":3}],"relatedSearches":[{"query":"JFA Eletrônicos trabalhe conosco"},{"query":"JFA eletrônicos telefone"},{"query":"JFA ELETRONICOS CNPJ"},{"query":"JFA telefone"},{"query":"Jfa eletronicos logo"},{"query":"JFA site"},{"query":"JFA Telecom"},{"query":"Fonte JFA"}],"credits":1}
 
     Então você produz:
 
-    Resposta: Transmita um esquema JSON específico em um campo responseSchema
+    Resposta: Sua pesquisa sobre jfa eletronicos retornou os seguintes resultados:
+
+    JFA Eletrônicos - Automotivo e Energia Solar: https://jfaeletronicos.com/
+    Jfa Eletronicos | MercadoLivre: https://lista.mercadolivre.com.br/jfa-eletronicos
+    JFA Eletrônicos I Perfil oficial (@jfaeletronicos) - Instagram: https://www.instagram.com/jfaeletronicos/
+
 
     Se prescisar de alguma ajuda me fale!
 

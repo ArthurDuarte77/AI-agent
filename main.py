@@ -9,6 +9,7 @@ from google_calendar import list_events, list_tasks, create_task, create_event
 from whatsapp import getMessagesUnread, send_messages
 from json_helpers import extract_json
 from scrapy import scrape_website
+from serper import search_somenthing
 
 # Load environment variables
 load_dotenv()
@@ -61,7 +62,8 @@ available_actions = {
     "get_messages": getMessagesUnread,
     "send_messages": send_messages,
     "send_email": send_email,
-    "scrape_website": scrape_website
+    "scrape_website": scrape_website,
+    "search_somenthing": search_somenthing
 }
 
 
