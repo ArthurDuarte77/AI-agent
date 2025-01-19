@@ -14,6 +14,7 @@ SCOPES = [
     "https://www.googleapis.com/auth/gmail.send",
     "https://www.googleapis.com/auth/calendar",
     "https://www.googleapis.com/auth/tasks",
+    'https://www.googleapis.com/auth/documents', 'https://www.googleapis.com/auth/drive'
 ]
 TOKEN_FILE = "token.json"
 CREDENTIALS_FILE = "credentials.json"

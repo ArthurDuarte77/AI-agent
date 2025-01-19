@@ -10,6 +10,8 @@ from whatsapp import getMessagesUnread, send_messages
 from json_helpers import extract_json
 from scrapy import scrape_website
 from serper import search_somenthing
+from audio_to_text import audio_to_text
+from docs import create_and_populate_doc
 
 # Load environment variables
 load_dotenv()
@@ -63,11 +65,15 @@ available_actions = {
     "send_messages": send_messages,
     "send_email": send_email,
     "scrape_website": scrape_website,
-    "search_somenthing": search_somenthing
+    "search_somenthing": search_somenthing,
+    "create_and_populate_doc": create_and_populate_doc
 }
 
 
-def process_user_input(user_prompt):
+def process_user_input(user_prompt, is_audio):
+    
+    if is_audio:
+        user_prompt = audio_to_text(user_prompt, "esp8266-352723-72e082175c46.json");
     """Processes user input, including function calls."""
     
     response = generate_text_with_conversation(history, user_prompt)
@@ -94,15 +100,15 @@ def process_user_input(user_prompt):
             result = action_function(**function_parms)
             function_result_message = f"Resposta_da_Ação: {result}"
             print(function_result_message)
-            process_user_input(function_result_message)
+            process_user_input(function_result_message, False)
     
 
 
 if __name__ == "__main__":
-    print("Olá! Sou seu assistente. Como posso ajudar?")
+    print("Olá! Sou seu assistente. Como posso ajudar?", False)
     while True:
         user_prompt = input("Você: ")
         if user_prompt.lower() in ["sair", "tchau", "adeus"]:
             print("Bot: Tchau! Até a próxima.")
             break
-        process_user_input(user_prompt)
+        process_user_input(user_prompt, False)

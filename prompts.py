@@ -381,5 +381,42 @@ search_somenthing:
 
 
     Se prescisar de alguma ajuda me fale!
+    
+create_and_populate_doc: 
+    ex: create_and_populate_doc : document_title = "teste", text_to_add = "teste"
+    Cria um documento de texto com o titulo teste e adiciona o texto "teste" dentro
+
+    Exemplo de sessão:
+
+    Pergunta: Coloque isso no documento de texto: "IF YOU WANT TO GROW UP JUST FORGET IT ALL AND GET THE PRIZE"
+    Pensamento: Devo criar um documento de texto com o título "Motivação" e adicionar o texto "IF YOU WANT TO GROW UP JUST FORGET IT ALL AND GET THE PRIZE" ao documento, LEMBRE SEMPRE DE PEGAR O TEXTO QUE O USUARIO QUER COLOCAR NO DOCUMENTO.
+    Ação:
+    {
+    "function_name": "create_and_populate_doc",
+    "function_parms": {
+    "document_title": "Motivação",
+    "text_to_add": "IF YOU WANT TO GROW UP JUST FORGET IT ALL AND GET THE PRIZE"
+    }
+    }
+    caso o pensamento seja solicitar detalhes ao usuario não tem ação:
+    Ação:
+    {
+    "function_name": "",
+    "function_parms": {
+    }
+    }
+    
+
+    PAUSA
+
+    Você será chamado novamente com isto:
+
+    Resposta_da_Ação: Document created with ID: 1NyCMS14ygNrEzcCziR0F1yFjTnUgK1iKgw7e7ULXUwk and has been shared. You can access your document here: https://docs.google.com/document/d/1NyCMS14ygNrEzcCziR0F1yFjTnUgK1iKgw7e7ULXUwk/edit
+
+    Então você produz:
+
+    Resposta: Seu documento foi criado com sucesso e está disponível para acesso: https://docs.google.com/document/d/1NyCMS14ygNrEzcCziR0F1yFjTnUgK1iKgw7e7ULXUwk/edit
+
+    Se prescisar de alguma ajuda me fale!
 
 """
